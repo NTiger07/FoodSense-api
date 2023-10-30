@@ -8,6 +8,8 @@ const passport = require("passport");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const connectDB = require("./config/db");
+const cookieParser = require("cookie-parser");
+
 
 dontenv.config({ path: "./config/config.env" });
 require("./config/passport")(passport); // Passport config
@@ -16,8 +18,22 @@ const PORT = process.env.PORT || 3000;
 connectDB();
 const app = express();
 
+app.options("*", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", [
+    "X-Requested-With",
+    "content-type",
+    "credentials",
+  ]);
+  res.header("Access-Control-Allow-Methods", "GET,POST");
+  res.status(200);
+  next();
+});
+
 // Body parser middleware
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(express.json());
 
 
@@ -53,6 +69,13 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", require("./routes/index"));
 app.use("/auth", require("./routes/auth"));
 app.use("/items", require("./routes/items"));
+
+
+
+const authRouter = require("./routes/oauth");
+const requestRouter = require("./routes/request");
+app.use("/oauth", authRouter);
+app.use("/request", requestRouter);
 
 app.listen(
   PORT,
