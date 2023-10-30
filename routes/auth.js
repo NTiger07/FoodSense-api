@@ -17,6 +17,7 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.redirect("/dashboard");
   }
 );
