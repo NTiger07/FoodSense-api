@@ -1,0 +1,43 @@
+<h3>Add Item</h3>
+<div class="row">
+  <form action="/items" method="POST">
+    <div>
+      <div>
+        <input type="number" id="itemId" name="itemId" />
+        <label for="itemName">ID</label>
+      </div>
+    </div>
+    <div>
+      <div>
+        <input type="text" id="itemName" name="itemName" />
+        <label for="itemName">Name</label>
+      </div>
+    </div>
+
+    <div>
+      <div>
+        <input type="number" name="units" id="units" />
+        <label for="units">Units</label>
+      </div>
+    </div>
+
+    <div>
+      <div>
+        <input type="date" name="expiryDate" id="expiryDate" />
+        <label for="units">Expiry Date</label>
+      </div>
+    </div>
+
+    <div>
+      <div>
+        <h5>Add Notes</h5>
+        <textarea id="itemNotes" name="itemNotes"></textarea>
+      </div>
+    </div>
+
+    <div>
+      <input type="submit" value="Save" class="btn" />
+      <a href="/dashboard" class="btn">Cancel</a>
+    </div>
+  </form>
+</div>
