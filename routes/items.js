@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { ensureAuth } = require("../middleware/auth");
 const Item = require("../models/Item");
 
 
@@ -8,7 +7,7 @@ const Item = require("../models/Item");
 // @desc     Get all items
 // @route    GET  "/items/all"
 
-router.get("/all",async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
     const items = await Item.find({ user: req.user.id }).lean();
     res.render("dashboard", {
@@ -17,37 +16,16 @@ router.get("/all",async (req, res) => {
     });
   } catch (error) {
     console.error(error)
-    res.render("error/500")
+    res.status(500)
   }
 
 });
 
-
-// @desc     Show add page
-// @route    GET  "/items/add"
-
-router.get("/add", ensureAuth, (req, res) => {
-  res.render("items/add");
-});
-
-// @desc     Process Add form
-// @route    POST  "/stories"
-
-router.post("/", ensureAuth, async (req, res) => {
-  try {
-    req.body.user = req.user.id;
-    await Item.create(req.body);
-    res.redirect("/dashboard");
-  } catch (error) {
-    console.error(error);
-    res.render("error/500");
-  }
-});
 
 // @desc     Update item
 // @route    PUT  "/items/:id"
 
-router.put("/:id", ensureAuth, async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     let item = await Item.findById(req.params.id).lean();
 
@@ -70,16 +48,17 @@ router.put("/:id", ensureAuth, async (req, res) => {
   }
 });
 
+
 // @desc     Delete item
 // @route    DELETE  "/items/:id"
 
-router.delete("/:id", ensureAuth, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     await Item.remove({ _id: req.params.id });
     res.redirect("/dashboard");
   } catch (error) {
     console.error(error);
-    return res.render("error/500");
+    res.status(500);
   }
 });
 
