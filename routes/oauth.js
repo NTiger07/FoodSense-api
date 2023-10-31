@@ -21,7 +21,7 @@ router.get("/", async function (req, res, next) {
 
   console.log(code);
   try {
-    const redirectURL = "http://localhost:3000/";
+    const redirectURL = "http://localhost:5173/dashboard";
     const oAuth2Client = new OAuth2Client(
       process.env.CLIENT_ID,
       process.env.CLIENT_SECRET,
@@ -38,7 +38,7 @@ router.get("/", async function (req, res, next) {
     console.log("Error logging in with OAuth2 user", err);
   }
 
-  res.redirect(303, "http://localhost:5173/");
+  res.redirect(303, "http://localhost:5173/dashboard");
 });
 
 module.exports = router;

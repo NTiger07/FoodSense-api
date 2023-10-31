@@ -74,6 +74,7 @@ app.use("/items", require("./routes/items"));
 
 const authRouter = require("./routes/oauth");
 const requestRouter = require("./routes/request");
+// Work on ensureAuth
 app.use("/oauth", authRouter);
 app.use("/request", requestRouter);
 
