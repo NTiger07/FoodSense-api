@@ -3,6 +3,26 @@ const router = express.Router();
 const { ensureAuth } = require("../middleware/auth");
 const Item = require("../models/Item");
 
+
+
+// @desc     Get all items
+// @route    GET  "/items/all"
+
+router.get("/all",async (req, res) => {
+  try {
+    const items = await Item.find({ user: req.user.id }).lean();
+    res.render("dashboard", {
+      name: req.user.firstName,
+      items
+    });
+  } catch (error) {
+    console.error(error)
+    res.render("error/500")
+  }
+
+});
+
+
 // @desc     Show add page
 // @route    GET  "/items/add"
 

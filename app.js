@@ -1,9 +1,11 @@
-const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors")
 const dontenv = require("dotenv");
 const morgan = require("morgan");
-const exphbs = require("express-handlebars");
+const passportLocal = require("passport-local").Strategy;
+const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
@@ -15,6 +17,12 @@ const PORT = process.env.PORT || 3000;
 
 connectDB();
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:5173", // <-- location of the react app were connecting to
+    credentials: true,
+  })
+);
 
 // Body parser middleware
 app.use(express.urlencoded({ extended: false }));
@@ -25,29 +33,24 @@ if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
 }
 
-// Handlebars Helpers
-const { formatDate } = require("./helpers/hbs");
-
-// HandleBars
-app.engine(".hbs", exphbs({ helpers: {formatDate}, defaultLayout: "main", extname: ".hbs" }));
-app.set("view engine", ".hbs");
-
 // Session middleware
 app.use(
   session({
     secret: "foodsense",
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
   })
 );
 
+
+app.use(cookieParser("foodsense"));
+
+
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Static folder
-app.use(express.static(path.join(__dirname, "public")));
 
 // Routes
 app.use("/", require("./routes/index"));

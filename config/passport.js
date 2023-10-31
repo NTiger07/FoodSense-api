@@ -1,47 +1,43 @@
-const GoogleStategy = require("passport-google-oauth20").Strategy;
+const localStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
 module.exports = function (passport) {
+  // Setting up passport with local strategy
   passport.use(
-    new GoogleStategy(
-      {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "/auth/google/callback",
-      },
-      async (accessToken, refreshToken, profile, done) => {
-        console.log(profile);
-        const newUser = {
-          googleId: profile.id,
-          email: profile.emails[0].value,
-          displayName: profile.displayName,
-          firstName: profile.name.givenName,
-          lastName: profile.name.familyName || "",
-          image: profile.photos[0].value,
-        };
-
-        try {
-          let user = await User.findOne({ googleId: profile.id });
-
-          if (user) {
-            done(null, user);
-          } else { 
-            user = await User.create(newUser);
-            done(null, user);
+    new localStrategy((email, password, done) => {
+      // Searching for user in the database by email
+      User.findOne({ email: email }, (err, user) => {
+        if (err) throw err; // Handling errors
+        if (!user) return done(null, false); // Returning if user not found
+        // Comparing entered password with the hashed password stored in the database
+        bcrypt.compare(password, user.password, (err, result) => {
+          if (err) throw err; // Handling errors
+          if (result === true) {
+            // Returning the user object if passwords match
+            return done(null, user);
+          } else {
+            // Returning false if passwords do not match
+            return done(null, false);
           }
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    )
+        });
+      });
+    })
   );
 
-  passport.serializeUser((user, done) => {
-    done(null, user.id);
+  // Serializing user to save session information
+  passport.serializeUser((user, cb) => {
+    cb(null, user.id);
   });
 
-  passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => done(err, user));
+  // Deserializing user to get session information
+  passport.deserializeUser((id, cb) => {
+    User.findOne({ _id: id }, (err, user) => {
+      const userInformation = {
+        email: user.email,
+      };
+      cb(err, userInformation);
+    });
   });
 };

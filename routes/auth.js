@@ -1,32 +1,45 @@
 const express = require("express");
 const passport = require("passport");
 const router = express.Router();
+const bcrypt = require("bcryptjs");
+const User = require("../models/User");
 
-// @desc     Auth with Google
-// @route    GET  "/auth/google"
+router.post("/login", (req, res, next) => {
 
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+  passport.authenticate("local", (err, user, info) => {
+    if (err) throw err;
+    if (!user) res.send("No User Exists");
+    else {
+      req.logIn(user, (err) => {
+        if (err) throw err;
+        res.send("Successfully Authenticated");
+        console.log(req.user);
+      });
+    }
+  })(req, res, next);
+});
 
-// @desc     Google auth callback
-// @route    GET  "/auth/google/callback"
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    res.redirect("/dashboard");
-  }
-);
+// Register Route
+router.post("/register", (req, res) => {
+  User.findOne({ username: req.body.username }, async (err, doc) => {
+    if (err) throw err;
+    if (doc) res.send("User Already Exists");
+    if (!doc) {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-// @desc     Logout user
-// @route    GET  "/auth/logout"
+      const newUser = new User({
+        email: req.body.email,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        username: req.body.email,
+        password: hashedPassword,
+      });
 
-router.get("/logout", (req, res) => {
-  req.logout()
-  res.redirect("/")
+      await newUser.save();
+      res.send("User Created");
+    }
+  });
 });
 
 module.exports = router;
