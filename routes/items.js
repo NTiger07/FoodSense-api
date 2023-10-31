@@ -21,6 +21,20 @@ router.get("/all", async (req, res) => {
 
 });
 
+// @desc     Add item
+// @route    POST  "/items"
+
+router.post("/", async (req, res) => {
+  try {
+    req.body.user = req.user.id;
+    await Item.create(req.body);
+  } catch (error) {
+    console.error(error);
+    res.status(500)
+  }
+});
+
+
 
 // @desc     Update item
 // @route    PUT  "/items/:id"
@@ -30,18 +44,18 @@ router.put("/:id", async (req, res) => {
     let item = await Item.findById(req.params.id).lean();
 
     if (!item) {
-      return res.render("error/404");
+      res.status(404)
     }
 
     if (item.user !== req.user.id) {
-      res.redirect("/");
+      res.status(400);
     } else {
       story = await Item.findOneAndUpdate({ _id: req.params.id }, req.body, {
         new: true,
         runValidators: true,
       });
 
-      res.redirect("/dashboard");
+      res.status(200)
     }
   } catch (error) {
     console.error(error);
@@ -55,7 +69,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     await Item.remove({ _id: req.params.id });
-    res.redirect("/dashboard");
+    res.status(200)
   } catch (error) {
     console.error(error);
     res.status(500);
