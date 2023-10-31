@@ -28,6 +28,7 @@ router.post("/", async (req, res) => {
   try {
     req.body.user = req.user.id;
     await Item.create(req.body);
+    res.send("Item Added")
   } catch (error) {
     console.error(error);
     res.status(500)
