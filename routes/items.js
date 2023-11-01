@@ -10,10 +10,7 @@ const Item = require("../models/Item");
 router.get("/all", async (req, res) => {
   try {
     const items = await Item.find({ user: req.user.id }).lean();
-    res.render("dashboard", {
-      name: req.user.firstName,
-      items
-    });
+    res.send(items)
   } catch (error) {
     console.error(error)
     res.status(500)
@@ -29,6 +26,7 @@ router.post("/", async (req, res) => {
     req.body.user = req.user.id;
     await Item.create(req.body);
     res.send("Item Added")
+    res.status(200)
   } catch (error) {
     console.error(error);
     res.status(500)
