@@ -12,8 +12,13 @@ router.post("/login", (req, res, next) => {
     else {
       req.logIn(user, (err) => {
         if (err) throw err;
-        res.send("Successfully Authenticated");
-        console.log(req.user);
+        const userInformation = {
+          email: req.user.email,
+          id: req.user.id,
+          firstname: req.user.firstName,
+          lastname: req.user.lastName,
+        };
+        res.send(userInformation);
       });
     }
   })(req, res, next);
@@ -37,7 +42,7 @@ router.post("/register", (req, res) => {
       });
 
       await newUser.save();
-      res.send("User Created");
+      res.send(req.user);
     }
   });
 });
