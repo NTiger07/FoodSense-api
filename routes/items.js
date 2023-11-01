@@ -7,9 +7,9 @@ const Item = require("../models/Item");
 // @desc     Get all items
 // @route    GET  "/items/all"
 
-router.get("/all", async (req, res) => {
+router.get("/all/:id", async (req, res) => {
   try {
-    const items = await Item.find({ user: req.user.id }).lean();
+    const items = await Item.find({ user: req.params.id }).lean();
     res.send(items)
   } catch (error) {
     console.error(error)
