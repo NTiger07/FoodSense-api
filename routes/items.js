@@ -9,7 +9,7 @@ const Item = require("../models/Item");
 
 router.get("/all/:id", async (req, res) => {
   try {
-    const items = await Item.find({ user: req.params.id }).lean();
+    const items = await Item.find({ user: req.params.id, isTrash: false }).lean();
     res.send(items)
   } catch (error) {
     console.error(error)
@@ -49,7 +49,7 @@ router.put("/:id", async (req, res) => {
     if (item.user !== req.user.id) {
       res.status(400);
     } else {
-      story = await Item.findOneAndUpdate({ _id: req.params.id }, req.body, {
+      item = await Item.findOneAndUpdate({ _id: req.params.id }, req.body, {
         new: true,
         runValidators: true,
       });

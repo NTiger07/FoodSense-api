@@ -6,6 +6,11 @@ const ItemSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  isTrash: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   itemId: {
     type: Number,
     required: true,
@@ -23,7 +28,7 @@ const ItemSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  itemNotes: { 
+  itemNotes: {
     type: String,
     required: false,
     trim: true,
