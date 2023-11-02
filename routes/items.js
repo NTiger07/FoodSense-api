@@ -62,6 +62,34 @@ router.put("/:id", async (req, res) => {
 });
 
 
+// @desc     Trash item
+// @route    POST  "/items/trash/:id"
+
+router.post("/trash/:id", async (req, res) => {
+  try {
+    let item = await Item.findById(req.params.id).lean();
+
+    if (!item) {
+      return res.status(404).send("Item not found");
+    }
+
+    item = await Item.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: { isTrash: true } }, 
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.status(200).send(item);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+
 // @desc     Delete item
 // @route    DELETE  "/items/:id"
 
