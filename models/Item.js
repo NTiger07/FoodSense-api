@@ -11,10 +11,6 @@ const ItemSchema = new mongoose.Schema({
     required: true,
     default: false,
   },
-  itemId: {
-    type: Number,
-    required: true,
-  },
   itemName: {
     type: String,
     required: true,
