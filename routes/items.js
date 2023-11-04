@@ -21,9 +21,9 @@ router.get("/all/:id", async (req, res) => {
 // @desc     Add item
 // @route    POST  "/items"
 
-router.post("/", async (req, res) => {
+router.post("/:id", async (req, res) => {
   try {
-    req.body.user = req.user.id;
+    req.body.user = req.params.id;
     await Item.create(req.body);
     res.send("Item Added")
     res.status(200)
