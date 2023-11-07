@@ -9,13 +9,15 @@ const Item = require("../models/Item");
 
 router.get("/all/:id", async (req, res) => {
   try {
-    const items = await Item.find({ user: req.params.id, isTrash: false }).lean();
-    res.send(items)
+    const items = await Item.find({
+      user: req.params.id,
+      isTrash: false,
+    }).lean();
+    res.send(items);
   } catch (error) {
-    console.error(error)
-    res.status(500)
+    console.error(error);
+    res.status(500);
   }
-
 });
 
 // @desc     Add item
@@ -25,15 +27,13 @@ router.post("/:id", async (req, res) => {
   try {
     req.body.user = req.params.id;
     await Item.create(req.body);
-    res.send("Item Added")
-    res.status(200)
+    res.send("Item Added");
+    res.status(200);
   } catch (error) {
     console.error(error);
-    res.status(500)
+    res.status(500);
   }
 });
-
-
 
 // @desc     Update item
 // @route    PUT  "/items/:id"
@@ -43,24 +43,21 @@ router.put("/:id", async (req, res) => {
     let item = await Item.findById(req.params.id).lean();
 
     if (!item) {
-      res.status(404)
+      return res.status(404).send("Item not found");
     }
 
-    if (item.user !== req.user.id) {
-      res.status(400);
-    } else {
-      item = await Item.findOneAndUpdate({ _id: req.params.id }, req.body, {
-        new: true,
-        runValidators: true,
-      });
+    item = await Item.findOneAndUpdate({ _id: req.params.id }, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-      res.status(200)
-    }
-  } catch (error) {
+    return res.status(200).send(item);
+  } 
+  catch (error) {
     console.error(error);
+    return res.status(500).send("Internal Server Error");
   }
 });
-
 
 // @desc     Trash item
 // @route    POST  "/items/trash/:id"
@@ -75,7 +72,7 @@ router.post("/trash/:id", async (req, res) => {
 
     item = await Item.findOneAndUpdate(
       { _id: req.params.id },
-      { $set: { isTrash: true } }, 
+      { $set: { isTrash: true } },
       {
         new: true,
         runValidators: true,
@@ -89,17 +86,16 @@ router.post("/trash/:id", async (req, res) => {
   }
 });
 
-
 // @desc     Delete item
 // @route    DELETE  "/items/:id"
 
 router.delete("/:id", async (req, res) => {
   try {
-    await Item.remove({ _id: req.params.id });
-    res.status(200)
+    await Item.deleteOne({ _id: req.params.id });
+    return res.status(200).send("Item Deleted");
   } catch (error) {
     console.error(error);
-    res.status(500);
+    return res.status(500).send("Internal Server Error");
   }
 });
 

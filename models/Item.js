@@ -20,6 +20,10 @@ const ItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  gramsPerUnit: {
+    type: Number,
+    required: true
+  },
   expiryDate: {
     type: Date,
     required: true,
