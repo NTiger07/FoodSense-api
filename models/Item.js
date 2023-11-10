@@ -16,6 +16,12 @@ const ItemSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  trashType: {
+    type: String,
+    enum: ['trash', 'expire'],
+    required: true,
+    default: null
+  },
   units: {
     type: Number,
     required: true,

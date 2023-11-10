@@ -62,7 +62,7 @@ router.put("/:id", async (req, res) => {
 // @desc     Trash item
 // @route    POST  "/items/trash/:id"
 
-router.post("/trash/:id", async (req, res) => {
+router.post("/trash/:id&:type", async (req, res) => {
   try {
     let item = await Item.findById(req.params.id).lean();
 
@@ -72,7 +72,7 @@ router.post("/trash/:id", async (req, res) => {
 
     item = await Item.findOneAndUpdate(
       { _id: req.params.id },
-      { $set: { isTrash: true } },
+      { $set: { isTrash: true, trashType: req.params.type } },
       {
         new: true,
         runValidators: true,
