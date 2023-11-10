@@ -14,7 +14,23 @@ router.get("/all/:id", async (req, res) => {
     console.error(error)
     res.status(500)
   }
-
 });
+
+// @desc     Get trashType
+// @route    GET  "/trash/type"
+
+router.get("/type/:id", async (req, res) => {
+ try {
+   const expiredItems = await Item.find({ user: req.params.id, isTrash: true, trashType: 'expire' }).lean();
+   const trashedItems = await Item.find({ user: req.params.id, isTrash: true, trashType: 'trash' }).lean();
+   res.send({
+    expiredItems: expiredItems.length,
+    trashedItems: trashedItems.length,
+   });
+ } catch (error) {
+   console.error(error);
+   res.status(500);
+ }
+})
 
 module.exports = router;
