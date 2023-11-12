@@ -57,7 +57,6 @@ app.use("/", require("./routes/index"));
 app.use("/auth", require("./routes/auth"));
 app.use("/items", require("./routes/items"));
 app.use("/trash", require("./routes/trash"));
-
 app.listen(
   PORT,
   console.log(`Server started on port ${PORT} in ${process.env.NODE_ENV} mode`)

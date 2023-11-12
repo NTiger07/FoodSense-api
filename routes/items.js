@@ -69,10 +69,10 @@ router.post("/trash/:id&:type", async (req, res) => {
     if (!item) {
       return res.status(404).send("Item not found");
     }
-
+    const date = new Date()
     item = await Item.findOneAndUpdate(
       { _id: req.params.id },
-      { $set: { isTrash: true, trashType: req.params.type } },
+      { $set: { isTrash: true, trashType: req.params.type, createdAt: date } },
       {
         new: true,
         runValidators: true,
