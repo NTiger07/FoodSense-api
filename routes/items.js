@@ -12,7 +12,7 @@ router.get("/all/:id", async (req, res) => {
     const items = await Item.find({
       user: req.params.id,
       isTrash: false,
-    }).lean();
+    }).sort({expiryDate: req.query.order}).lean(); // 1 = Ascending, -1 = descending
     res.send(items);
   } catch (error) {
     console.error(error);
