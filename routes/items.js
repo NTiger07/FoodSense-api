@@ -2,17 +2,19 @@ const express = require("express");
 const router = express.Router();
 const Item = require("../models/Item");
 
-
-
 // @desc     Get all items
 // @route    GET  "/items/all"
 
 router.get("/all/:id", async (req, res) => {
   try {
+    const regexQuery = new RegExp(req.query.query, 'i')
     const items = await Item.find({
+      itemName: {$regex: regexQuery},
       user: req.params.id,
       isTrash: false,
-    }).sort({expiryDate: req.query.order}).lean(); // 1 = Ascending, -1 = descending
+    })
+      .sort({ expiryDate: req.query.order })
+      .lean();
     res.send(items);
   } catch (error) {
     console.error(error);
@@ -52,8 +54,7 @@ router.put("/:id", async (req, res) => {
     });
 
     return res.status(200).send(item);
-  } 
-  catch (error) {
+  } catch (error) {
     console.error(error);
     return res.status(500).send("Internal Server Error");
   }
@@ -69,7 +70,7 @@ router.post("/trash/:id&:type", async (req, res) => {
     if (!item) {
       return res.status(404).send("Item not found");
     }
-    const date = new Date()
+    const date = new Date();
     item = await Item.findOneAndUpdate(
       { _id: req.params.id },
       { $set: { isTrash: true, trashType: req.params.type, createdAt: date } },
